@@ -26,6 +26,7 @@ except Exception as impExc:
 #
 # Setting default values:
 #
+# plot
 eps=np.finfo(float).eps;
 default=1;
 yMin=eps;
@@ -38,8 +39,11 @@ typeX="lin";
 typeY="lin";
 fName="Plot";
 Carg=len(sys.argv)-1;
+# SysOut
 fatalOn=True;
 infoOn=[True,True,False,False];
+# TeX
+logStyle="ln";
 #
 #------------------------------------------------
 #
@@ -302,7 +306,7 @@ def findAbs(string,pos):
 		if infoOn[2]:
 			print("Found '|' at "+repr(endPos));
 		return endPos;
-	elif string[pos-1] in opList+braList:
+	elif string[pos-1] in opList+openBraList:
 		while pos<len(string): 
 			nextPos=string.find("|",pos+1);	
 			if nextPos>0:
@@ -337,6 +341,16 @@ def checkRowAbs(string,nextPos,depth=0):
 	else:
 		return -1;
 #
+# -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#
+# Defining space remover
+#
+def removeSpaces(func):
+	func.replace(" ","");
+	if infoOn[3]:
+		print("Removed all Spaces");
+	return func;
+#
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
 # Simple String Operations
@@ -358,9 +372,9 @@ def ignoreString(string,start,ignore=1):
 
 def getWord(string,pos=0,dot=0):
 	if dot:
-		if len(string)>pos and string[pos] in alphaList +dotList:	
+		if len(string)>pos and string[pos] in alphaList+dotList:	
 			word="";
-			while len(string)>pos and string[pos] in alphaList + dotList:
+			while len(string)>pos and string[pos] in alphaList+dotList+["\"]:
 				word+=string[pos];
 				pos+=1;
 			if word!="":
@@ -381,37 +395,37 @@ def getWord(string,pos=0,dot=0):
 # corFuncLists:
 
 #	trigonometric:
-sinList=["sin"];
-cosList=["cos"];
-tanList=["tan"];
-arccosList=["arccos"];
-arcsinList=["arcsin"];
-arctanList=["arctan"];
-cotList=["cot"];
-cscList=["csc"];
-secList=["sec"];
-arccotList=["arccot"];
-arccscList=["arccsc"];
-arcsecList=["arcsec"];
+sinList=["sin","\sin"];
+cosList=["cos","\cos"];
+tanList=["tan","\tan"];
+arccosList=["arccos","\arccos"];
+arcsinList=["arcsin","\arcsin"];
+arctanList=["arctan","\arctan"];
+cotList=["cot","\cot"];
+cscList=["csc","\csc"];
+secList=["sec","\sec"];
+arccotList=["arccot","\arccot"];
+arccscList=["arccsc","\arccsc"];
+arcsecList=["arcsec","\arcsec"];
 
 #	hyperbolic:
-coshList=["cosh"];
-sinhList=["sinh"];
-tanhList=["tanh"];
-arccoshList=["arccosh"];
-arcsinhList=["arcsinh"];
-arctanhList=["arctanh"];
-cothList=["coth"];
-cschList=["csch"];
-sechList=["sech"];
-arccothList=["arccoth"];
-arccschList=["arccsch"];
-arcsechList=["arcsech"];
+coshList=["cosh","\cosh"];
+sinhList=["sinh","\sinh"];
+tanhList=["tanh","\tanh"];
+arccoshList=["arccosh","\mathrm{arccosh}"];
+arcsinhList=["arcsinh","\mathrm{arcsinh}"];
+arctanhList=["arctanh","\mathrm{arctanh}"];
+cothList=["coth","\coth"];
+cschList=["csch","\csch"];
+sechList=["sech","\sech"];
+arccothList=["arccoth","\mathrm{arccoth}"];
+arccschList=["arccsch","\mathrm{arccsch}"];
+arcsechList=["arcsech","\mathrm{arcsech}"];
 
 #	exponential/ logarithmic:
-logList=["log","ln"];
-expList=["exp","e"];
-rootList=["root","rt"];
+logList=["log","ln","lg","\"+logStyle];
+expList=["exp","e","\exp"];
+rootList=["root","rt","\sqrt"];
 
 #	misc:
 sgnList=["sgn"];
@@ -421,7 +435,7 @@ maxList=["max"];
 sqrtList=["sqrt"];
 
 #	constants:
-piList=["pi"];
+piList=["pi","\pi"];
 goldenList=["golden"];
 func="2*(sin(2*(arcsec(sin(22,22))))+cosh(5)+cos(3.8)*pi+root(3,53)"
 
@@ -456,6 +470,12 @@ def corFunc(func):
 	while n<len(argList):
 		argList[n]=corFunc(argList[n]);
 		n+=1
+	n=0;
+# Tex Handler
+	while wordlist[n][0]=="\" and n<len(wordList):
+		if infoOn[3]:
+			print("tex handling");
+		n+=1;
 	n=0;
 	while n < len(wordList):
 # Functions
@@ -535,10 +555,20 @@ def corFunc(func):
 			wordList[n] = "numpy.arcsinh(numpy.reciprocal("+arg[n]+"))";
 #       Exponents and Logarithms:
 		elif wordList[n] in logList:
-			print("Interpreting "+wordList[n]+" as natural logarithm (numpy.log)");
-			wordList[n] = "numpy.log("+arg[n]+")";
+			logType=arg[n].find(",");
+			if logType != -1:
+				logTier=arg[n][:logType];
+				logArg=arg[n][logType+1:];
+				if InfoOn[1]:
+					print("Interpreting "+wordList[n]+" as logarithm to the base "+logTier+" of "+logArg+": (numpy.log("+logArg+"))/(numpy.log("+logTier+"))");
+				wordList[n]="(numpy.log(logArg))/(numpy.log(logTier))";
+			else:
+				if InfoOn[1]:	
+					print("Interpreting "+wordList[n]+" as natural logarithm (numpy.log)");
+				wordList[n] = "numpy.log("+arg[n]+")";
 		elif wordList[n] in expList:
-			print("Interpreting "+wordList[n]+" as exponential function (numpy.exp)");
+			if infoOn[1]:
+				print("Interpreting "+wordList[n]+" as exponential function (numpy.exp)");
 			wordList[n] = "numpy.exp("+arg[n]+")";
 		elif wordList[n] in rootList:
 			rootType=arg[n].find(",");
@@ -548,8 +578,9 @@ def corFunc(func):
 			else:
 				rootTier="2";
 				rootArg=arg[n];
-			print("Interpreting "+wordList[n]+"("+arg[n]+") as "+rootTier+"th root of "+rootArg+" (exp(("+rootTier+")^(-1)*log("+rootArg+")))");
-			wordList[n]="numpy.exp(numpy.reciprocal("+rootTier+"*numpy.log("+rootArg+"))"
+			if infoOn[1]:
+				print("Interpreting "+wordList[n]+"("+arg[n]+") as "+rootTier+"th root of "+rootArg+" (exp(("+rootTier+")^(-1)*log("+rootArg+")))");
+			wordList[n]="numpy.exp(numpy.reciprocal("+rootTier+"*numpy.log("+rootArg+"))";
 #       Misc:
 		elif wordList[n] in sgnList:
 			print("Interpreting "+wordList[n]+" as sign function (numpy.sign)");
@@ -576,6 +607,10 @@ def corFunc(func):
 			print("Interpreting "+wordList[n]+" as golden ratio ("+repr(scipy.golden)+")");
 			wordList[n] = "scipy.golden";
 			contant[n]=True;
+# Other Commands
+		else:
+			if infoOn[1]:
+				print("Untouched: "+wordList[n]);
 		n+=1
 	n=0;
 	while n<len(wordList):
@@ -701,16 +736,16 @@ def valiData():
 #
 # 		Handling Function problems
 #
-	n=0
-	while n <= len(critFunc)-1:
-		if func.find(critFunc[n]) >= 0:
-			if n <= 1:
-				zeroDivH(func);
-			elif n <= 4:
-				logNegH(func);
-			elif n == 5:
-				arcInvH(func);
-		n=n+1;
+#	n=0
+#	while n <= len(critFunc)-1:
+#		if func.find(critFunc[n]) >= 0:
+#			if n <= 1:
+#				zeroDivH(func);
+#			elif n <= 4:
+#				logNegH(func);
+#			elif n == 5:
+#				arcInvH(func);
+#		n=n+1;
 #
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
 #
@@ -746,15 +781,15 @@ def valiData():
 #
 # log
 #
-def logNegH(func):
-	print("logNeg"+func);
+#def logNegH(func):
+#	print("logNeg"+func);
 #
 # ---------------
 #
 # arc
 #
-def arcInvH(func):
-	print("arcInv"+func);
+#def arcInvH(func):
+#	print("arcInv"+func);
 #
 # --------------------------------------------------------------------------------------------------------------------------------------------------------
 #
@@ -879,15 +914,15 @@ def openPdf():
 #
 # Actual start of the Program
 #
-gatherInput();
-plotFunc();
-writePdf();
+#gatherInput();
+#plotFunc();
+#writePdf();
 #origErr=sys.stderr;
 #origOut=sys.stdout;
 #sys.stdout="";
 #sys.stderr="";
-c.writePDFfile(fName);
+#c.writePDFfile(fName);
 #sys.stderr=origErr;
 #sys.stdout=origOut;
-openPdf();
-
+#openPdf();
+valiData(func);
