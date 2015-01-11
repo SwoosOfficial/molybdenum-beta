@@ -569,7 +569,7 @@ def valiData():
 	func=removeSpaces(func);
 	func=func.replace(",",".");
 	infoOut[0]+="\nI am interpreting "+oriFunc+" as "+func;
-#	func=corBra(func);
+#
 #
 #
 #
@@ -580,7 +580,7 @@ def valiData():
 #
 # Actual start of the Program
 #
-func=input();
+func=input("Give me a expression to calculate:");
 valiData();
 if len(fatalOut)>defFatalLen:
 	print(fatalOut);
