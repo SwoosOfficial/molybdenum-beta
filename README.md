@@ -7,8 +7,8 @@ v1.0.0:
 
     Works like a pocket calculator, supports all trigonometric function, misc roots, logarithms and exponential functions.
     
-    Features:
-        - Calculate values of stacked functions with constant input.
+    (New) Features:
+        + Calculate values of stacked functions with constant input.
 v1.0.1:
 
     The unnecesary files have been removed.
