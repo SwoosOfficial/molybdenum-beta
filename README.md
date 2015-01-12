@@ -5,7 +5,7 @@ MB is a python based math interpreter and operator:
 
 # Table of Contents:
 1. History of Changes
-2. Known Bugs
+2. Known Issues
 
 # 1. History of Changes:
 ## v1.0.0:
