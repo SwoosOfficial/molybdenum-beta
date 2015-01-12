@@ -92,7 +92,7 @@ modList=["mod","%","\\mod"]
 sqrtList=["sqrt"];
 
 #	constants:
-piList=["pi","\\pi"];
+piList=["pi","Pi","\\pi"];
 goldenList=["golden"];
 
 # getSubFuncLists
@@ -214,7 +214,7 @@ def findAbs(string,pos):
 				fatalOut+="\nFatal Error in findAbs! (#1)";
 		infoOut[2]+="\nI found '|' at "+repr(endPos);
 		return endPos;
-	elif string[pos-1] in opList+openBraList:
+	elif string[pos-1] in opList+braOpenList:
 		while pos<len(string): 
 			nextPos=string.find("|",pos+1);	
 			if nextPos>0:
@@ -521,8 +521,8 @@ def corFunc(func):
 			infoOut[1]+="\nI am interpreting "+wordList[n]+" as pi ("+repr(scipy.pi)+")";
 			wordList[n] = "scipy.pi";
 		elif wordList[n] in goldenList:
-			infoOut[1]+="\nI am interpreting "+wordList[n]+" as golden ratio ("+repr(scipy.golden)+")";
-			wordList[n] = "scipy.golden";
+			infoOut[1]+="\nI am interpreting "+wordList[n]+" as golden ratio ("+repr(scipy.constants.golden)+")";
+			wordList[n] = "scipy.constants.golden";
 # Other Commands
 		else:
 			infoOut[1]+="\nI left untouched: "+wordList[n];
@@ -581,10 +581,10 @@ def valiData():
 # Actual start of the Program
 #
 func=input();
-valiData();
 if len(fatalOut)>defFatalLen:
 	print(fatalOut);
 print(infoOut[0]);
+valiData();
 #print(infoOut[1]);
 sol=eval(func);
 print(sol);
