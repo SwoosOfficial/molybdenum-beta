@@ -27,14 +27,15 @@ except Exception as impExc:
 #
 #		Mathematics
 #
-defVariable="x";	
+defVariable="x";
+defVariableList=["x","y","z"];
 #
 # 		SysOut
 #
 fatalOn=True;
 infoOn=[True,True,True,True];
-fatalOut="Fatal Errors Occurred:";
-defFatalLen=len(fatalOut);
+fatalOut=["Fatal Errors Occurred:",""];
+defFatalLen=len(fatalOut[0]);
 infoOut=["","","",""]
 #
 # 		TeX
@@ -90,10 +91,13 @@ minList=["min","\\min"];
 maxList=["max","\\max"];
 modList=["mod","%","\\mod"]
 sqrtList=["sqrt"];
+allFuncList=sqrtList+modList+maxList+minList+absList+sgnList+logList+expList+rootList+arcsechList+arccschList+arccothList+cothList+cschList+sechList+arccoshList+arcsinhList+arctanhList+sinhList+coshList+tanhList+sinList+cosList+tanList+arccosList+arcsinList+arctanList+cotList+cscList+secList+arccotList+arccscList+arcsecList;
+
 
 #	constants:
-piList=["pi","Pi","\\pi"];
+piList=["pi","\\pi"];
 goldenList=["golden"];
+epsList=["eps","\\eps"];
 
 # getSubFuncLists
 
@@ -105,7 +109,7 @@ braCloseList=braList[5:];
 defaultBraList=[braOpenList[0],braCloseList[0]]
 dotList=[".",","];
 intList=["0","1","2","3","4","5","6","7","8","9"];
-constantsList=piList +goldenList;
+constantsList=piList +goldenList+epsList;
 #
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
@@ -115,23 +119,24 @@ constantsList=piList +goldenList;
 #		Defining findBra (--> getSubFunc, --> corBra, --> findAbs, --> getTexArg)
 # 	
 def findBra(string, braPos):
-        braType=string[braPos];
-        try:
-                braListPos=braList.index(braType);
-        except ValueError:
-                fatalOut+="\nFatal Error in findBra (#0, "+braType+" is not a bracket.)";
-        if braListPos<5:
-                endPos=braPos;
-                matchBra=braCloseList[braListPos];
-                while string.count(matchBra, braPos, endPos+1)!=string.count(braType, braPos, endPos+1):
-                        endPos+=1;
-                return endPos;
-        else:
-                startPos=braPos;
-                matchBra=braOpenList[braListPos-5];
-                while string.count(matchBra, startPos, braPos+1)!=string.count(braType, startPos, braPos+1):
-                       startPos-=1;
-                return startPos;
+	braType=string[braPos];
+	try:
+		braListPos=braList.index(braType);
+	except:
+		fatalOut[0]+="\nFatal Error in findBra (#0, "+braType+" is not a bracket.)";
+		raise;
+	if braListPos<5:
+		endPos=braPos;
+		matchBra=braCloseList[braListPos];
+		while string.count(matchBra, braPos, endPos+1)!=string.count(braType, braPos, endPos+1):
+			endPos+=1;
+		return endPos;
+	else:
+		startPos=braPos;
+		matchBra=braOpenList[braListPos-5];
+		while string.count(matchBra, startPos, braPos+1)!=string.count(braType, startPos, braPos+1):
+			startPos-=1;
+		return startPos;
 #
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
@@ -153,7 +158,7 @@ def corBra(string):
 		elif braBegAdd !=0:
 			infoOut[1]+="\nI have added "+repr(braBegAdd)+" '(' at the beginning of the function.";
 		else:
-				fatalOut+="\nFatal Error in corBra (#0)"
+				fatalOut[0]+="\nFatal Error in corBra (#0)"
 	return string;
 #
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -205,16 +210,16 @@ def findAbs(string,pos):
 					endPos=pos;
 					break;
 				else:
-					fatalOut+="\nFatal Error in findAbs! (#0)";
+					fatalOut[0]+="\nFatal Error in findAbs! (#0)";
 			elif nextPos==-1:
 				infoOut[3]+="\nI found no further '|'";
 				endPos=pos;
 				break;
 			else:
-				fatalOut+="\nFatal Error in findAbs! (#1)";
+				fatalOut[0]+="\nFatal Error in findAbs! (#1)";
 		infoOut[2]+="\nI found '|' at "+repr(endPos);
 		return endPos;
-	elif string[pos-1] in opList+braOpenList:
+	elif string[pos-1] in opList+openBraList:
 		while pos<len(string): 
 			nextPos=string.find("|",pos+1);	
 			if nextPos>0:
@@ -225,13 +230,13 @@ def findAbs(string,pos):
 					endPos=pos;
 					break;
 				else:
-					fatalOut+="\nFatal Error in findAbs! (#2)";
+					fatalOut[0]+="\nFatal Error in findAbs! (#2)";
 			elif nextPos==-1:
 				infoOut[3]+="\nI found no further '|'";
 				endPos=pos;
 				break;
 			else:
-				fatalOut+="\nFatal Error in findAbs! (#3)";	
+				fatalOut[0]+="\nFatal Error in findAbs! (#3)";	
 		infoOut[2]+="\nI found '|' at "+repr(endPos);
 		return endPos;
 	else:
@@ -314,10 +319,9 @@ def getSubFunc(func):
 	wordEndPos=0;
 	wordEndPosList=[];
 	wordList=[];
-	braCountList=[];
 	while n < len(func):
 		try:
-                        if getWord(func,n,1)[0] not in ["x","y","z"]+dotList:
+                        if getWord(func,n,1)[0] not in defVariableList+dotList:
                                 wordList.append(getWord(func,n,1)[0]);
                                 wordEndPos=getWord(func,n,1)[1];
                                 wordEndPosList.append(wordEndPos);
@@ -333,37 +337,48 @@ def getSubFunc(func):
 			else:
                                 n+=1;
 	posList=wordEndPosList;
+	argList=getArgs(posList,func,wordList)[0];
+	braCountList=getArgs(posList,func,wordList)[1];
+	return [wordList,argList,posList,braCountList];
+
+def getArgs(posList,func,wordList,depth=0):	
 	n=0;
 	argList=[];
-	while n<len(posList) and posList[n]<len(func):
-		nextPosVal=func[posList[n]];
-		if wordList[n] in expList:
-			nextPosVal+=2;
-		if nextPosVal in intList:
-			argList.append(nextPosVal);
-			braCountList.append(0);
-		elif nextPosVal in opList:
-			if wordList[n] not in constantsList:
-				argList.append(defVariable);
-				braCountList.append(2);
-			else:
+	braCountList=[];
+	while n<len(posList):
+		if  posList[n]+depth<len(func):
+			nextPosVal=func[posList[n]+depth];
+		else:
+			nextPosVal="*";
+		if nextPosVal:
+			if wordList[n] in expList:
+				nextPosVal+=2;
+			if wordList[n] not in allFuncList:
 				argList.append("");
 				braCountList.append(0);
-		elif nextPosVal in braList:
-			if nextPosVal in braCloseList:
-				arg=defVariable;
+			elif nextPosVal in intList:
+				argList.append(nextPosVal);
+				braCountList.append(0);
+			elif nextPosVal in opList:
+				argList.append(defVariable);
 				braCountList.append(2);
-			elif nextPosVal in defaultBraList:
-				arg=func[posList[n]+1:findBra(func,posList[n])];
-				braCountList.append(2);
+			elif nextPosVal in braList:
+				if nextPosVal in braCloseList:
+					arg=defVariable;
+					braCountList.append(2);
+				elif nextPosVal in defaultBraList:
+					arg=func[posList[n]+1:findBra(func,posList[n])];
+					braCountList.append(2);
+				else:
+					arg=getMultipleArg(func,posList[n],2)[0];
+					braCountList.append(getMultipleArg(func,posList[n],2)[1]);
+				argList.append(arg);
 			else:
-				arg=getMultipleArg(func,posList[n],2)[0];
-				braCountList.append(getMultipleArg(func,posList[n],2)[1]);
-			argList.append(arg);
+				fatalOut[0]+="\nFatal Error in getArgs at "+repr(posList[n])+repr(n)+nextPosVal;
 		else:
-			fatalOut+="\nFatal Error in getArgs at "+repr(posList[n])+repr(n)+nextPosVal;
+			getArgs(posList,func,wordList,depth+1);
 		n+=1;
-	return [wordList,argList,posList,braCountList];
+	return [argList,braCountList]
 #
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
@@ -518,14 +533,17 @@ def corFunc(func):
 			wordList[n] = "numpy.maximum("+arg[n]+")";
 # Constants
 		elif wordList[n] in piList:
-			infoOut[1]+="\nI am interpreting "+wordList[n]+" as pi ("+repr(scipy.pi)+")";
-			wordList[n] = "scipy.pi";
+			infoOut[1]+="\nI am interpreting "+wordList[n]+" as pi ("+repr(scipy.constants.pi)+")";
+			wordList[n] = "scipy.constants.pi";
 		elif wordList[n] in goldenList:
 			infoOut[1]+="\nI am interpreting "+wordList[n]+" as golden ratio ("+repr(scipy.constants.golden)+")";
 			wordList[n] = "scipy.constants.golden";
+		elif wordList[n] in epsList:
+			pass;
 # Other Commands
 		else:
 			infoOut[1]+="\nI left untouched: "+wordList[n];
+			wordList[n]=wordList[n];
 		n+=1;
 	n=0;
 	while n<len(wordList):
@@ -569,23 +587,39 @@ def valiData():
 	func=removeSpaces(func);
 	func=func.replace(",",".");
 	infoOut[0]+="\nI am interpreting "+oriFunc+" as "+func;
-#	func=corBra(func);
 #
+#  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
 #
+#	Input Handler
 #
-#
+def inputHandler(inputZ):
+	inputX=[];
+	if inputZ=="":
+		infoOut[0]+="\nI have found no input";
+		inputZ=input("What do you want me to do?");
+		inputHandler(inputZ);
+	else:
+		inputList=inputZ.split("&");
+		n=0;
+		while n<len(inputList):
+			inputY=inputList[n];
+			inputY=inputY.split(" ");
+			inputX.append(inputY);
+			n+=1;
+		n=0;
+		while n<len(inputX):
+			while n<len(
 #
 #
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
 # Actual start of the Program
 #
-func=input();
-if len(fatalOut)>defFatalLen:
-	print(fatalOut);
-print(infoOut[0]);
+func=input("What do you want me to do?");
 valiData();
-#print(infoOut[1]);
+if len(fatalOut[0])>defFatalLen:
+	print(fatalOut[0]);
+print(infoOut[0]);
+print(infoOut[1]);
 sol=eval(func);
 print(sol);
-
