@@ -43,7 +43,8 @@ molybdenum-beta is a python3 based math interpreter and operator:
 
 # 3. Known Issues
 * Unable to interprete spaces yet.
+* Not able to plot functions yet.
+* If a function is given wrong or unsupported, the program may crash or give you a python3 error
 
 # 4. List of Supported Expressions
-    
-    
+* will be added in a future release.
