@@ -592,23 +592,23 @@ def valiData():
 #
 #	Input Handler
 #
-def inputHandler(inputZ):
-	inputX=[];
-	if inputZ=="":
-		infoOut[0]+="\nI have found no input";
-		inputZ=input("What do you want me to do?");
-		inputHandler(inputZ);
-	else:
-		inputList=inputZ.split("&");
-		n=0;
-		while n<len(inputList):
-			inputY=inputList[n];
-			inputY=inputY.split(" ");
-			inputX.append(inputY);
-			n+=1;
-		n=0;
-		while n<len(inputX):
-			while n<len(
+#def inputHandler(inputZ):
+#	inputX=[];
+#	if inputZ=="":
+#		infoOut[0]+="\nI have found no input";
+#		inputZ=input("What do you want me to do?");
+#		inputHandler(inputZ);
+#	else:
+#		inputList=inputZ.split("&");
+#		n=0;
+#		while n<len(inputList):
+#			inputY=inputList[n];
+#			inputY=inputY.split(" ");
+#			inputX.append(inputY);
+#			n+=1;
+#		n=0;
+#		while n<len(inputX):
+#			while n<len(
 #
 #
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
