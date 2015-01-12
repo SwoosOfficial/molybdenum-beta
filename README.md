@@ -1,16 +1,27 @@
 molybdenum-beta
 ===============
 
-molybdenum-beta is a python based math interpreter and operator:
+molybdenum-beta is a python3 based math interpreter and operator:
 
 # Table of Contents:
 1. General Documentation
 2. History of Changes
 3. Known Issues
+4. List of supported Expressions
 
 # 1. General Documentation:
-* The Script is only able to run natively on Unix based systems, where python itself is installed to 
+* molybdenum-beta is only able to run natively on Unix based systems, where python3 itself is installed to <code>/usr/bin/python3</code>. For all other OS or python installations you should run it via <code>python3 molybdenum-beta</code>
+* You need to have Numpy,Scipy and Pyx installed.
+* molybdenum-beta is programmed to understand very natural english so an input like:<code>plot the sine function form zero to pi</code>. (will be added in future releases)
+* molybdenum-beta automatically adds missing brackets at the eng of your expression. That can be useful!
+* molybdenum-beta is female so she is able to multitask. Just tell her the jobs seperated by <code>&</code>-symbols
+* molybdenum-beta is able to understand TeX and amsmath syntax (-->List of supported Expressions)
+* molybdenum-beta is able to calculate custom roots and logarithms to custom bases (--> List of supported Expressions)
+* Dont worry if you spell a function or a command wrong molybdenum-beta is your best friend und may understand it even though.
+* molybdenum-beta is a very talkative one, if you want to see more of what she is doing just add <code>talk to me</code>.
+
 # 2. History of Changes:
+
 ## v1.0.0:
 * Works like a pocket calculator, supports all trigonometric function, misc roots, logarithms and exponential functions.
 * New Features:
@@ -30,5 +41,7 @@ molybdenum-beta is a python based math interpreter and operator:
 
 # 3. Known Issues
 * Unable to interprete spaces yet.
+
+# 4. List of Supported Expressions
     
     
