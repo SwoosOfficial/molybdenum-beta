@@ -31,12 +31,13 @@ molybdenum-beta is a python3 based math interpreter and operator:
 
 ## v1.0.1:
 * The unnecesary files have been removed.
-* plot-beta.py is an old version of molybdenum-beta combined with a pyx plot feature (will be part of MB in future releases).
+* plot-beta.py is an old (alpha) version of molybdenum-beta combined with a pyx plot feature (will be part of mb in future releases).
 * New Features
 	*  
  
 ## v1.0.2:
 * Bugfix with constants at the end of the expression.
+* plot-beta.py has been removed, the plot function will be added to molybdenum-beta in one of the next versions.
 * New Features:
 	* Input description added.
 	* Now able to understand Python syntax
