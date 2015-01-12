@@ -1,13 +1,16 @@
 molybdenum-beta
 ===============
 
-MB is a python based math interpreter and operator:
+molybdenum-beta is a python based math interpreter and operator:
 
 # Table of Contents:
-1. History of Changes
-2. Known Issues
+1. General Documentation
+2. History of Changes
+3. Known Issues
 
-# 1. History of Changes:
+# 1. General Documentation:
+* The Script is only able to run natively on Unix based systems, where python itself is installed to 
+# 2. History of Changes:
 ## v1.0.0:
 * Works like a pocket calculator, supports all trigonometric function, misc roots, logarithms and exponential functions.
 * New Features:
@@ -25,7 +28,7 @@ MB is a python based math interpreter and operator:
 	* Input description added.
 	* Now able to understand Python syntax
 
-# 2. Known Issues
+# 3. Known Issues
 * Unable to interprete spaces yet.
     
     
