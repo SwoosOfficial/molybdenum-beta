@@ -12,7 +12,7 @@ molybdenum-beta is a python3 based math interpreter and operator:
 # 1. General Documentation:
 * molybdenum-beta is only able to run natively on Unix based systems, where python3 itself is installed to <code>/usr/bin/python3</code>. For all other OS or python installations you should run it via <code>python3 molybdenum-beta</code>
 * You need to have Numpy,Scipy and Pyx installed.
-* molybdenum-beta is programmed to understand very natural english so an input like:<code>plot the sine function form zero to pi</code>. (will be added in future releases)
+* molybdenum-beta is programmed to understand very natural english so an input like:<code>plot the sine function from zero to pi</code>. (will be added in future releases)
 * molybdenum-beta automatically adds missing brackets at the eng of your expression. That can be useful!
 * molybdenum-beta is female so she is able to multitask. Just tell her the jobs seperated by <code>&</code>-symbols
 * molybdenum-beta is able to understand TeX and amsmath syntax (-->List of supported Expressions)
