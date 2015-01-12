@@ -25,7 +25,7 @@ MB is a python based math interpreter and operator:
 	* Input description added.
 	* Now able to understand Python syntax
 
-# 2. Known Bugs
+# 2. Known Issues
 * Unable to interprete spaces yet.
     
     
