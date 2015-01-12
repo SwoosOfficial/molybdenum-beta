@@ -18,7 +18,7 @@ molybdenum-beta is a python3 based math interpreter and operator:
 * molybdenum-beta is able to understand TeX and amsmath syntax (-->List of supported Expressions)
 * molybdenum-beta is able to calculate custom roots and logarithms to custom bases (--> List of supported Expressions)
 * Dont worry if you spell a function or a command wrong, molybdenum-beta is your best friend and may understand it even though. Even small or capital letters are generally not a problem.
-* molybdenum-beta is a very talkative one, if you want to see more of what she is doing just add <code>talk to me</code>. (will be added in future releases)
+* molybdenum-beta is a very talkative one, if you want to see more of what she is doing just add <code>talk to me</code> or if you prefer to keep her quiet add <code>be quiet</code> (will be added in future releases)
 * Even though molybdenum-beta understands english you can also give her any python3 expression.
 * If you doubt, just try you will be suprised how much molybdenum-beta understands. There are much more Expressions than stated in the List of supported Expressions!
 
