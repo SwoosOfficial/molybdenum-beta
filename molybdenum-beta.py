@@ -590,26 +590,96 @@ def valiData():
 #
 #  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
 #
-#	Input Handler
+#	Input Handler (=>func, <-- getWord, <= input, <=infoOut, <= allFuncList, <= constantsList)
 #
-#def inputHandler(inputZ):
-#	inputX=[];
-#	if inputZ=="":
-#		infoOut[0]+="\nI have found no input";
-#		inputZ=input("What do you want me to do?");
-#		inputHandler(inputZ);
-#	else:
-#		inputList=inputZ.split("&");
-#		n=0;
-#		while n<len(inputList):
-#			inputY=inputList[n];
-#			inputY=inputY.split(" ");
-#			inputX.append(inputY);
-#			n+=1;
-#		n=0;
-#		while n<len(inputX):
-#			while n<len(
-#
+def inputHandler(inputZ):
+	inputX=[];
+	commandList=[];
+	funcList=[];
+	orderList=[];
+	commands=[];
+	functions=[];
+	threadList=[];
+	singlethreaded=True;
+	if inputZ=="":
+		infoOut[0]+="\nI have found no input.";
+		inputZ=input("\nWhat do you want me to do? ");
+		inputHandler(inputZ);
+	else:
+		inputList=inputZ.split("&");
+		n=0;
+		while n<len(inputList):
+			inputY=inputList[n];
+			inputY=inputY.split(" ");
+			inputX.append(inputY);
+			n+=1;
+		n=0;
+		while n<len(inputX):
+			m=0
+			while m<len(inputX[n]):
+				element=getWord(inputX[n][m])[0];
+				if element==inputX[n][m]:
+					if element not in allFuncList+constantsList:
+						commandList.append(element);
+						funcList.append(0);
+						orderList.append(1);
+					else:
+						funcList.append(element);
+						commandList.append(0);
+						orderList.append(0);
+				else:
+					funcList.append(element);
+					commandList.append(0);
+					orderList.append(0);
+				threadList[m]=n;
+			m+=1;
+		n+=1;
+	n=0;
+	l=0;
+	k=0;
+	while n<len(orderList):
+		if n:
+			if threadList[n-1]==threadList[n]:
+				if orderList[n] and not orderList[n-1]:
+					commands[l]=commandList[n];
+					l+=1;
+				elif orderList[n] and orderlist[n-1]:
+					commands[l]+="§"+commandList[n];
+				elif not orderlist[n] and orderList[n-1]:
+					functions[k]=functionList[n];
+					k+=1;
+				else:
+					functions[k]+=functionList[n];
+			else:
+				thread.append([threadList[n-1],[commands,functions]]);
+				singlethreaded=False;
+				commands=[];
+				functions=[];
+				l=0;
+				k=0;
+				if orderList[n]:
+					commands[l]=commandList[n];
+					l+=1;
+				else:
+					functions[k]=functionList[n];
+					commands[l]="None";
+					l+=1;
+					k+=1;
+		else:
+			if orderList[n]:
+				commands[l]=commandList[n];
+				l+=1;
+			else:
+				functions[k]=functionList[n];
+				commands[l]="None";
+				l+=1;
+				k+=1;
+	n+=1;
+	if singlethreaded:
+		thread.append([0,[commands,functions]]);
+	return thread;
+	
+
 #
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
