@@ -280,19 +280,19 @@ def ignoreString(string,start,ignore=1):
 	string=string[:start]+string[end:];
 	return string;
 
-def getWord(string,pos=0,dot=0):
+def getWord(string,pos=0,dot=0,addLists=[]):
 	if dot:
-		if len(string)>pos and string[pos] in alphaList+dotList+["\\"]:	
+		if len(string)>pos and string[pos] in alphaList+dotList+["\\"]+addLists:	
 			word="";
-			while len(string)>pos and string[pos] in alphaList+dotList+["\\"]:
+			while len(string)>pos and string[pos] in alphaList+dotList+["\\"]+addLists:
 				word+=string[pos];
 				pos+=1;
 			if word!="":
 				return [word,pos];
 	else:
-		if len(string)>pos and string[pos] in alphaList:	
+		if len(string)>pos and string[pos] in alphaList+addLists:	
 			word="";
-			while string[pos] in alphaList:
+			while len(string)>pos and string[pos] in alphaList+addLists:
 				word+=string[pos];
 				pos+=1;
 			if word!="":
@@ -601,6 +601,7 @@ def inputHandler(inputZ):
 	functions=[];
 	threadList=[];
 	singlethreaded=True;
+	thread=[];
 	if inputZ=="":
 		infoOut[0]+="\nI have found no input.";
 		inputZ=input("\nWhat do you want me to do? ");
@@ -611,72 +612,82 @@ def inputHandler(inputZ):
 		while n<len(inputList):
 			inputY=inputList[n];
 			inputY=inputY.split(" ");
+			while True:
+				try:	
+					inputY.remove("");
+				except ValueError:
+					break;
 			inputX.append(inputY);
 			n+=1;
 		n=0;
 		while n<len(inputX):
-			m=0
+			m=0;
 			while m<len(inputX[n]):
-				element=getWord(inputX[n][m])[0];
+				elementZ=getWord(inputX[n][m]);
+				if elementZ!=None:
+					element=elementZ[0];
+				else:
+					break;
 				if element==inputX[n][m]:
 					if element not in allFuncList+constantsList:
 						commandList.append(element);
 						funcList.append(0);
 						orderList.append(1);
 					else:
-						funcList.append(element);
+						funcList.append(inputX[n][m]);
 						commandList.append(0);
 						orderList.append(0);
 				else:
-					funcList.append(element);
+					funcList.append(inputX[n][m]);
 					commandList.append(0);
 					orderList.append(0);
-				threadList[m]=n;
-			m+=1;
-		n+=1;
+				threadList.append(n);
+				m+=1;
+			n+=1;
+			print(n)
 	n=0;
-	l=0;
-	k=0;
+	l=-1;
+	k=-1;
 	while n<len(orderList):
+		print(funcList)
 		if n:
 			if threadList[n-1]==threadList[n]:
 				if orderList[n] and not orderList[n-1]:
-					commands[l]=commandList[n];
+					commands.append(commandList[n]);
 					l+=1;
 				elif orderList[n] and orderlist[n-1]:
 					commands[l]+="§"+commandList[n];
-				elif not orderlist[n] and orderList[n-1]:
-					functions[k]=functionList[n];
+				elif not orderList[n] and orderList[n-1]:
+					functions.append(funcList[n]);
 					k+=1;
 				else:
-					functions[k]+=functionList[n];
+					functions[k]+=funcList[n];
 			else:
 				thread.append([threadList[n-1],[commands,functions]]);
 				singlethreaded=False;
 				commands=[];
 				functions=[];
-				l=0;
-				k=0;
+				l=-1;
+				k=-1;
 				if orderList[n]:
-					commands[l]=commandList[n];
+					commands.append(commandList[n]);
 					l+=1;
 				else:
-					functions[k]=functionList[n];
-					commands[l]="None";
+					functions.append(funcList[n]);
+					commands.append("None");
 					l+=1;
 					k+=1;
 		else:
 			if orderList[n]:
-				commands[l]=commandList[n];
+				commands.append(commandList[n]);
 				l+=1;
 			else:
-				functions[k]=functionList[n];
-				commands[l]="None";
+				functions.append(funcList[n]);
+				commands.append("None");
 				l+=1;
 				k+=1;
-	n+=1;
-	if singlethreaded:
-		thread.append([0,[commands,functions]]);
+		n+=1;
+	thread.append([threadList[n-1],[commands,functions]]);
 	return thread;
 	
 
@@ -685,11 +696,13 @@ def inputHandler(inputZ):
 #
 # Actual start of the Program
 #
-func=input("What do you want me to do?");
-valiData();
+#func=input("What do you want me to do? ");
+func="do sin(2* cos( 2)) & do sin(3)"
+#valiData();
+sol=inputHandler(func);
 if len(fatalOut[0])>defFatalLen:
 	print(fatalOut[0]);
 print(infoOut[0]);
 print(infoOut[1]);
-sol=eval(func);
+#sol=eval(func);
 print(sol);
