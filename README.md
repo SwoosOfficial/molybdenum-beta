@@ -41,9 +41,11 @@ molybdenum-beta is a python3 based math interpreter and operator:
 * New Features:
 	* Input description added.
 	* Now able to understand Python syntax
+
 ## v1.1.0:
 * New Features:
-	* Now supports english speech input
+	* Now supports english language input
+
 # 3. Known Issues
 * Unable to interprete spaces yet.
 * Not able to plot functions yet.
