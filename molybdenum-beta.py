@@ -682,8 +682,56 @@ def inputHandler(inputZ):
 		n+=1;
 	thread.append([threadList[n-1],[commands,functions]]);
 	return thread;
-	
-
+#
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#
+#	Comprehender (<-- inputHandler, <-- interpretCommand)
+#
+def comprehend(thread):
+	n=0;
+	while n<=len(thread):
+		command=thread[n][1][0];
+		if "§" in command:
+			commandList=command.split("§");
+		else:
+			commandList=[command];
+		action=interpretCommand(commandList);
+		
+#
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#
+#	interpretCommand (<-- inputHandler, --> inputHandler, <= plotList, <= solveList, <= notList, <= addList)
+#
+def interpretCommand(commandList):
+	n=0;
+	action=[];
+	while n<len(commandList):
+		if commandList[n] in plotList:
+			action.append("plot");
+		elif commandList[n] in solveList:
+			action.append("solve");
+		elif commandList[n] in notList:
+			action.append("-");
+		elif commandList[n] in addList:
+			action.append(":");
+		elif commandList[n] in andList:
+			action.append("+");
+		elif commandList[n] in printList:
+			action.append("tex");
+		elif commandList[n] in namingList:
+			action.append("name")
+		else:
+			
+#		elif commandList[n] in derivateList:
+#			action+="derivate";
+#		elif commandList[n] in integrateList:
+#			action+="integrate";
+#		elif commandList[n] in positiveList:
+#			action+=">0";
+#		elif commandList[n] in negativeList:
+#			action+="<0";
+#		elif commandList[n] in getZeroList:
+#			action+="=0?"
 #
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
