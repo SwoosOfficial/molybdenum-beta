@@ -627,16 +627,11 @@ def inputHandler(inputZ):
 				if elementZ!=None:
 					element=elementZ[0];
 				else:
-					break;
-				if element==inputX[n][m]:
-					if element not in allFuncList+constantsList:
-						commandList.append(element);
-						funcList.append(0);
-						orderList.append(1);
-					else:
-						funcList.append(inputX[n][m]);
-						commandList.append(0);
-						orderList.append(0);
+					element="";
+				if element==inputX[n][m] and element not in allFuncList+constantsList:
+					commandList.append(element);
+					funcList.append(0);
+					orderList.append(1);
 				else:
 					funcList.append(inputX[n][m]);
 					commandList.append(0);
@@ -644,12 +639,10 @@ def inputHandler(inputZ):
 				threadList.append(n);
 				m+=1;
 			n+=1;
-			print(n)
 	n=0;
 	l=-1;
 	k=-1;
 	while n<len(orderList):
-		print(funcList)
 		if n:
 			if threadList[n-1]==threadList[n]:
 				if orderList[n] and not orderList[n-1]:
