@@ -99,6 +99,28 @@ piList=["pi","\\pi"];
 goldenList=["golden"];
 epsList=["eps","\\eps"];
 
+#	varLists
+varList=["xtype","logarithmic"];
+
+#	logicLists
+equalsList=["is","=","==","equals"];
+notList=["not","!"];
+logicLists=equalsList+notList;
+
+#	commandLists
+plotList=["plot"];
+solveList=["solve"];
+fitList=["fit"];
+andList=["and"];
+ifList=["for","if","while","with"];
+printList=["tex"];
+formatList=[];
+nameList=["as"];
+outputList=["output"];
+
+
+commandListZ=plotList+solveList+fitList+andList+ifList+printList+formatList+nameList+outputList
+
 # getSubFuncLists
 
 opList=["+","-","/","*","|","^","%","&","_"];
@@ -628,10 +650,18 @@ def inputHandler(inputZ):
 					element=elementZ[0];
 				else:
 					element="";
-				if element==inputX[n][m] and element not in allFuncList+constantsList:
+				if element==inputX[n][m] and element in commandListZ:
 					commandList.append(element);
 					funcList.append(0);
 					orderList.append(1);
+				elif element in logicLists:
+					if element in equalsList:
+						element="=";
+					elif element in notList:
+						element="!";
+					funcList.append(element);
+					commandList.append(0);
+					orderList.append(0);
 				else:
 					funcList.append(inputX[n][m]);
 					commandList.append(0);
@@ -646,9 +676,9 @@ def inputHandler(inputZ):
 		if n:
 			if threadList[n-1]==threadList[n]:
 				if orderList[n] and not orderList[n-1]:
-					commands.append(commandList[n]);
+					commands.append([commandList[n]]);
 					l+=1;
-				elif orderList[n] and orderlist[n-1]:
+				elif orderList[n] and orderList[n-1]:
 					commands[l].append(commandList[n]);
 				elif not orderList[n] and orderList[n-1]:
 					functions.append(funcList[n]);
@@ -657,13 +687,12 @@ def inputHandler(inputZ):
 					functions[k]+=funcList[n];
 			else:
 				thread.append([threadList[n-1],[commands,functions]]);
-				singlethreaded=False;
 				commands=[];
 				functions=[];
 				l=-1;
 				k=-1;
 				if orderList[n]:
-					commands.append(commandList[n]);
+					commands.append([commandList[n]]);
 					l+=1;
 				else:
 					functions.append(funcList[n]);
@@ -672,7 +701,7 @@ def inputHandler(inputZ):
 					k+=1;
 		else:
 			if orderList[n]:
-				commands.append(commandList[n]);
+				commands.append([commandList[n]]);
 				l+=1;
 			else:
 				functions.append(funcList[n]);
@@ -690,7 +719,7 @@ def inputHandler(inputZ):
 def comprehend(thread):
 	n=0;
 	while n<=len(thread):
-		command=thread[n][1][0];
+		commandList=thread[n][1][0];
 		action=interpretCommand(commandList);
 		
 #
@@ -707,36 +736,25 @@ def interpretCommand(commandList):
 			action.append("plot");
 		elif commandList[n] in solveList:
 			action.append("solve");
-		elif commandList[n] in notList:
-			action.append("-");
-		elif commandList[n] in addList:
-			action.append(":");
+		elif commandList[n] in fitList:
+			action.append("fit")
 		elif commandList[n] in andList:
-			action.append("+");
+			action.append(action[n-1]);
 		elif commandList[n] in printList:
 			action.append("tex");
-		elif commandList[n] in ifList:
-			action.append("if");
+		elif commandList[n] in formatList:
+			action.append("format");
 		else:
-			action.append("definition:"+commandList[n]);
-#		elif commandList[n] in derivateList:
-#			action+="derivate";
-#		elif commandList[n] in integrateList:
-#			action+="integrate";
-#		elif commandList[n] in positiveList:
-#			action+=">0";
-#		elif commandList[n] in negativeList:
-#			action+="<0";
-#		elif commandList[n] in getZeroList:
-#			action+="=0?"
+			fatalOut+="Fatal Error in interpretCommand #0";
 #
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
 # Actual start of the Program
 #
 #func=input("What do you want me to do? ");
-func="do sin(2* cos( 2)) & do sin(3)"
+func="plot sin(2* cos( 2x)) for x<0 and xtype is not logarithmic & fit sin(3) output as fuu.pdf"
 #valiData();
+print(func);
 sol=inputHandler(func);
 if len(fatalOut[0])>defFatalLen:
 	print(fatalOut[0]);

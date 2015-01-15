@@ -8,6 +8,7 @@ molybdenum-beta is a python3 based math interpreter and operator:
 2. History of Changes
 3. Known Issues
 4. List of supported Expressions
+5. To be Added
 
 # 1. General Documentation:
 * molybdenum-beta is only able to run natively on Unix based systems, where python3 itself is installed to <code>/usr/bin/python3</code>. For all other OS or python installations you should run it via <code>python3 molybdenum-beta</code>
@@ -53,3 +54,5 @@ molybdenum-beta is a python3 based math interpreter and operator:
 
 # 4. List of Supported Expressions
 * will be added in a future release.
+
+# 5. To be added:
