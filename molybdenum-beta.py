@@ -649,7 +649,7 @@ def inputHandler(inputZ):
 					commands.append(commandList[n]);
 					l+=1;
 				elif orderList[n] and orderlist[n-1]:
-					commands[l]+="§"+commandList[n];
+					commands[l].append(commandList[n]);
 				elif not orderList[n] and orderList[n-1]:
 					functions.append(funcList[n]);
 					k+=1;
@@ -691,10 +691,6 @@ def comprehend(thread):
 	n=0;
 	while n<=len(thread):
 		command=thread[n][1][0];
-		if "§" in command:
-			commandList=command.split("§");
-		else:
-			commandList=[command];
 		action=interpretCommand(commandList);
 		
 #
@@ -705,6 +701,7 @@ def comprehend(thread):
 def interpretCommand(commandList):
 	n=0;
 	action=[];
+	names=[];
 	while n<len(commandList):
 		if commandList[n] in plotList:
 			action.append("plot");
@@ -718,10 +715,10 @@ def interpretCommand(commandList):
 			action.append("+");
 		elif commandList[n] in printList:
 			action.append("tex");
-		elif commandList[n] in namingList:
-			action.append("name")
+		elif commandList[n] in ifList:
+			action.append("if");
 		else:
-			
+			action.append("definition:"+commandList[n]);
 #		elif commandList[n] in derivateList:
 #			action+="derivate";
 #		elif commandList[n] in integrateList:
