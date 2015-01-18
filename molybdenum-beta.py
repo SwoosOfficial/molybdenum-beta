@@ -114,7 +114,7 @@ fitList=["fit"];
 andList=["and"];
 ifList=["for","if","while","with"];
 printList=["tex"];
-formatList=[];
+formatList=["format"];
 nameList=["as"];
 outputList=["output"];
 
@@ -302,19 +302,11 @@ def ignoreString(string,start,ignore=1):
 	string=string[:start]+string[end:];
 	return string;
 
-def getWord(string,pos=0,dot=0,addLists=[]):
-	if dot:
-		if len(string)>pos and string[pos] in alphaList+dotList+["\\"]+addLists:	
+def getWord(string,pos=0,addLists=[],removeLists=[]):
+	checkList=addLists[]
+		if len(string)>pos and string[pos] in checkList:	
 			word="";
-			while len(string)>pos and string[pos] in alphaList+dotList+["\\"]+addLists:
-				word+=string[pos];
-				pos+=1;
-			if word!="":
-				return [word,pos];
-	else:
-		if len(string)>pos and string[pos] in alphaList+addLists:	
-			word="";
-			while len(string)>pos and string[pos] in alphaList+addLists:
+			while len(string)>pos and string[pos] in checkList:
 				word+=string[pos];
 				pos+=1;
 			if word!="":
@@ -342,22 +334,17 @@ def getSubFunc(func):
 	wordEndPosList=[];
 	wordList=[];
 	while n < len(func):
-		try:
-                        if getWord(func,n,1)[0] not in defVariableList+dotList:
-                                wordList.append(getWord(func,n,1)[0]);
-                                wordEndPos=getWord(func,n,1)[1];
-                                wordEndPosList.append(wordEndPos);
-		except TypeError:
-			infoOut[3]+="\nTypeError in getSubfunc";
-			pass;
-		finally:
-			if wordEndPos>n:
-				n=wordEndPos;
-				if len(func)>n:
-					if func[n] in braOpenList:
-						n=findBra(func,n)+1;
-			else:
-                                n+=1;
+		if getWord(func,n,alphaList+dotList+["\\"])[0] not in defVariableList+dotList and getWord(func,n,alphaList+dotList+["\\"])[0]!=None:
+                        wordList.append(getWord(func,n,alphaList+dotList+["\\"])[0]);
+                        wordEndPos=getWord(func,n,alphaList+dotList+["\\"])[1];
+                        wordEndPosList.append(wordEndPos);
+		if wordEndPos>n:
+			n=wordEndPos;
+			if len(func)>n:
+				if func[n] in braOpenList:
+					n=findBra(func,n)+1;
+				else:
+					n+=1;
 	posList=wordEndPosList;
 	argList=getArgs(posList,func,wordList)[0];
 	braCountList=getArgs(posList,func,wordList)[1];
@@ -645,7 +632,7 @@ def inputHandler(inputZ):
 		while n<len(inputX):
 			m=0;
 			while m<len(inputX[n]):
-				elementZ=getWord(inputX[n][m]);
+				elementZ=getWord(inputX[n][m],0,alphaList+dotList);
 				if elementZ!=None:
 					element=elementZ[0];
 				else:
@@ -718,10 +705,52 @@ def inputHandler(inputZ):
 #
 def comprehend(thread):
 	n=0;
-	while n<=len(thread):
-		commandList=thread[n][1][0];
-		action=interpretCommand(commandList);
-		
+	while n*2<=len(thread):
+		mainFuncList=[];
+		sideFuncList=[];
+		mainCommandList=[];
+		sideCommandList=[];
+		m=0
+		while m<len(thread[n][1][0]):
+			interpreterZ(thread,n,m,mainFuncList,sideFuncList,mainCommandList,sideCommandList)
+		n+=1;
+#
+#
+#
+#
+#
+def interpreterZ(thread,n,m,mainFuncList,sideFuncList,mainCommandList,sideCommandList,l=0)
+	commandList=thread[n][1][0][m];
+	action=interpretCommand(commandList);
+	thread[n][1][0][m]=action;
+	if "plot" in action:
+		if action.index("plot")==len(action)-1 and "and" not in action:
+			mainCommandList.append("plot");
+			mainFuncList.append(thread[n][1][1]);
+			lastCommand="main";
+		elif False:
+			pass;
+		elif action.index("fit")==len(action)-1:
+			mainCommandList.append("fit");
+			sideCommandList.append("plot");
+			mainFuncList.append(thread[n][1][1]);
+			lastCommand="main";
+	elif False:
+		pass;
+	elif "fit" in action:
+		pass;
+	elif "solve" in action:
+		pass;
+	elif "for" in action:
+		if action.index("for")==len(action)-1:
+			sideFuncList.append(thread[n][1][1]);
+			lastCommand="side";
+		else:
+			infoOut[1]+="\nI couldn't find a proper condition! So i skipped!";
+	elif "and" in action:
+		 		if action.index("and")==len(action)-1 and lastCommand=="side":
+			sideCommandList.append(
+	return [mainFunc,
 #
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
@@ -730,7 +759,6 @@ def comprehend(thread):
 def interpretCommand(commandList):
 	n=0;
 	action=[];
-	names=[];
 	while n<len(commandList):
 		if commandList[n] in plotList:
 			action.append("plot");
@@ -739,13 +767,20 @@ def interpretCommand(commandList):
 		elif commandList[n] in fitList:
 			action.append("fit")
 		elif commandList[n] in andList:
-			action.append(action[n-1]);
+			action.append("and");
 		elif commandList[n] in printList:
 			action.append("tex");
 		elif commandList[n] in formatList:
 			action.append("format");
+		elif commandList[n] in ifList:
+			action.append("for");
+		elif commandList[n] in nameList:
+			action.append("name");
+		elif commandList[n] in outputList:
+			action.append("output");
 		else:
 			fatalOut+="Fatal Error in interpretCommand #0";
+		n+=1;
 #
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
