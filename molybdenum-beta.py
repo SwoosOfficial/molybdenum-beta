@@ -603,100 +603,25 @@ def valiData():
 #
 def inputHandler(inputZ):
 	inputX=[];
-	commandList=[];
-	funcList=[];
-	orderList=[];
-	commands=[];
-	functions=[];
-	threadList=[];
-	singlethreaded=True;
 	thread=[];
+	globalZ=[];
 	if inputZ=="":
 		infoOut[0]+="\nI have found no input.";
 		inputZ=input("\nWhat do you want me to do? ");
 		inputHandler(inputZ);
 	else:
+		command=getWord(inputZ,0,alphaList)[0];
+		inputZ=ingoreString(inputZ,0,getWord(inputZ,0,alphaList)[1]);
 		inputList=inputZ.split("&");
-		n=0;
+# examplary input: plot f=2x § x>0 & g=ln(x) § x>0 &§ xtype=log
+		n=0
 		while n<len(inputList):
-			inputY=inputList[n];
-			inputY=inputY.split(" ");
-			while True:
-				try:	
-					inputY.remove("");
-				except ValueError:
-					break;
-			inputX.append(inputY);
-			n+=1;
-		n=0;
-		while n<len(inputX):
-			m=0;
-			while m<len(inputX[n]):
-				elementZ=getWord(inputX[n][m],0,alphaList+dotList);
-				if elementZ!=None:
-					element=elementZ[0];
-				else:
-					element="";
-				if element==inputX[n][m] and element in commandListZ:
-					commandList.append(element);
-					funcList.append(0);
-					orderList.append(1);
-				elif element in logicLists:
-					if element in equalsList:
-						element="=";
-					elif element in notList:
-						element="!";
-					funcList.append(element);
-					commandList.append(0);
-					orderList.append(0);
-				else:
-					funcList.append(inputX[n][m]);
-					commandList.append(0);
-					orderList.append(0);
-				threadList.append(n);
-				m+=1;
-			n+=1;
-	n=0;
-	l=-1;
-	k=-1;
-	while n<len(orderList):
-		if n:
-			if threadList[n-1]==threadList[n]:
-				if orderList[n] and not orderList[n-1]:
-					commands.append([commandList[n]]);
-					l+=1;
-				elif orderList[n] and orderList[n-1]:
-					commands[l].append(commandList[n]);
-				elif not orderList[n] and orderList[n-1]:
-					functions.append(funcList[n]);
-					k+=1;
-				else:
-					functions[k]+=funcList[n];
+			if inputList[n][0]=="§":
+				globalZ.append(inputList[n][1:])
 			else:
-				thread.append([threadList[n-1],[commands,functions]]);
-				commands=[];
-				functions=[];
-				l=-1;
-				k=-1;
-				if orderList[n]:
-					commands.append([commandList[n]]);
-					l+=1;
-				else:
-					functions.append(funcList[n]);
-					commands.append("None");
-					l+=1;
-					k+=1;
-		else:
-			if orderList[n]:
-				commands.append([commandList[n]]);
-				l+=1;
-			else:
-				functions.append(funcList[n]);
-				commands.append("None");
-				l+=1;
-				k+=1;
-		n+=1;
-	thread.append([threadList[n-1],[commands,functions]]);
+				subInput=inputList[n].split("§");
+				thread.append([subInput[0],subInput[1:]]);
+			n+=1;
 	return thread;
 #
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
