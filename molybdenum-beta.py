@@ -712,7 +712,7 @@ def interpretCommand(commandList):
 # Actual start of the Program
 #
 #func=input("What do you want me to do? ");
-func="plot sin(2* cos( 2x)) for x<0 and xtype is not logarithmic & fit sin(3) output as fuu.pdf"
+func="plot sin(2* cos( 2x)) § x<0 § xtype=logarithmic & sin(3) &§ output=fuu.pdf"
 #valiData();
 print(func);
 sol=inputHandler(func);
