@@ -124,7 +124,7 @@ commandListZ=plotList+solveList+fitList+andList+ifList+printList+formatList+name
 # getSubFuncLists
 
 opList=["+","-","/","*","|","^","%","&","_"];
-alphaList=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",];
+alphaList=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
 braList=["(","[","{","«","„",")","]","}","»","“"];
 braOpenList=braList[:5];
 braCloseList=braList[5:];
@@ -132,6 +132,162 @@ defaultBraList=[braOpenList[0],braCloseList[0]]
 dotList=[".",","];
 intList=["0","1","2","3","4","5","6","7","8","9"];
 constantsList=piList +goldenList+epsList;
+#
+#
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#
+#
+#
+#	S T R I N G - S H I T
+#
+#
+#
+#
+#
+#
+#
+class FuncString(object):
+    def __init__(self,funcString):
+        self.funcString=funcString;
+    def __str__(self):
+        return self.funcString
+#
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#
+# Defining injectString(self)
+#
+# Requires:
+#       Methods:
+#           -
+#       Parameters:
+#           infoOut[]
+#
+    def injectString(self,injection,start,ignore=0,end=0):
+        if end == 0:
+            end=ignore+start;
+            infoOut[2]+="\nI Injected: "+injection+" at "+repr(start)+" with override until "+repr(end)+" in "+self.funcString;
+        self.funcString=self.funcString[:start]+injection+self.funcString[end:];
+        return self.funcString;
+#
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#
+# Defining ignoreString(self)
+#
+# Requires:
+#       Methods:
+#           -
+#       Parameters:
+#           infoOut[]
+#
+    def ignoreString(self,start,ignore=1):
+        end=start+ignore;
+        infoOut[2]+="\nI Ignored all characters from "+repr(start)+" to "+repr(end)+" in "+self.funcString;
+        self.funcString=self.funcString[:start]+self.funcString[end:];
+        return self.funcString;
+#
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#
+# Defining getWord(self)
+#
+# Requires:
+#       Methods:
+#           -
+#       Parameters:
+#           infoOut[]
+#
+    def getWord(self,pos=0,addLists=[],removeLists=[]):
+        checkList=addLists;
+        originalPos=pos;
+# - removelists to be added
+        if len(self.funcString)>pos and self.funcString[pos] in checkList:	
+            word="";
+            while len(self.funcString)>pos and self.funcString[pos] in checkList:
+                word+=self.funcString[pos];
+                pos+=1;
+        if word!="":
+            infoOut[2]+="\nI got the word: "+word+" at position: "+repr(originalPos);
+            return [word,pos];
+        else:
+            infoOut[2]+="\nI got no word at position: "+repr(originalPos);
+#
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#
+# Defining findAbs(self)
+#
+# Requires:
+#       Methods:
+#           checkRowAbs(self)
+#       Parameters:
+#           infoOut[]
+#
+    def findAbs(self,pos):
+        string=self.funcString
+        count=1;
+        if pos==0:
+            while pos<len(string): 
+                nextPos=string.find("|",pos+1);	
+                if nextPos>0:
+                    if count>0:
+                        count+=self.checkRowAbs(nextPos);
+                        pos=max(pos+1,nextPos);
+                    elif count==0:
+                        endPos=pos;
+                        break;
+                    else:
+                        fatalOut[0]+="\nFatal Error in findAbs! (#0)";
+                elif nextPos==-1:
+                    infoOut[3]+="\nI found no further '|'";
+                    endPos=pos;
+                    break;
+                else:
+                    fatalOut[0]+="\nFatal Error in findAbs! (#1)";
+            infoOut[2]+="\nI found '|' at "+repr(endPos);
+            return endPos;
+        elif string[pos-1] in opList+braOpenList:
+            while pos<len(string): 
+                nextPos=string.find("|",pos+1);	
+                if nextPos>0:
+                    if count>0:
+                        count+=self.checkRowAbs(nextPos);
+                        pos=max(pos+1,nextPos);
+                    elif count==0:
+                        endPos=pos;
+                        break;
+                    else:
+                        fatalOut[0]+="\nFatal Error in findAbs! (#2)";
+                elif nextPos==-1:
+                    infoOut[3]+="\nI found no further '|'";
+                    endPos=pos;
+                    break;
+                else:
+                    fatalOut[0]+="\nFatal Error in findAbs! (#3)";	
+            infoOut[2]+="\nI found '|' at "+repr(endPos);
+            return endPos;
+        else:
+            infoOut[3]+="\nI have done nothing in findAbs!";
+#
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#
+# Defining checkRowAbs(self,nextPos)
+#
+# Requires:
+#       Methods:
+#           -
+#       Parameters & Lists:
+#           opList, braList
+#
+    def checkRowAbs(self,nextPos,depth=0):
+        string=self.funcString;
+        if nextPos-1-depth<0:
+            return 1;
+        elif string[nextPos-1-depth] in opList+braList and string[nextPos-1-depth]!="|":
+            return 1;
+        elif string[nextPos-1-depth] in opList+braList and string[nextPos-1-depth]=="|":
+            return self.checkRowAbs(nextPos,depth+1);
+        else:
+            return -1;
 #
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
@@ -159,6 +315,168 @@ def findBra(string, braPos):
 		while string.count(matchBra, startPos, braPos+1)!=string.count(braType, startPos, braPos+1):
 			startPos-=1;
 		return startPos;
+#
+#
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#
+#
+#	C O U N T E R - S H I T
+#
+#
+#
+#
+#
+#
+#
+#
+class Counter(object):
+    count=0;
+    def __init__(self):
+        type(self).count+=1;
+    def __del__(self):
+        type(self).count-=1;
+#
+#
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#
+#
+#
+#
+#
+#
+#	F U N C T I O N - S H I T
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+class Function(Counter,FuncString):
+# (de-) construct
+    def __init__(self,func,state="natural",typeZ="explicit",varList=[],inDim=1,outDim=1):
+        self.func=func;
+        self.state=state;
+        self.typeZ=typeZ;
+        self.varList=varList;
+        self.inDim=inDim;
+        self.outDim=outDim;
+        Counter.__init__(self);
+    def __str__(self):
+        return self.func;
+    def __del__(self):
+        Counter.__del__(self);
+# methods
+#
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#
+# Defining corBra
+#
+# Requires:
+#       Methods:
+#           -
+#       Parameters:
+#           infoOut[]
+#
+    def corBra(self):
+        string=self.func;
+        if string.count("(") != string.count(")"):
+            infoOut[1]+="\nThere is a Bracket error in the given function!";
+            infoOut[1]+="\nI  am attempting to correct brackets errors...";
+            braEndAdd = braBegAdd = 0;
+            while string.count("(") > string.count(")"):
+                string = string+")";
+                braEndAdd+=1;
+            while string.count("(") < string.count(")"):
+                string = "("+ string;
+                braBegAdd+=1
+            if braEndAdd != 0:
+                infoOut[1]+="\nI have added "+repr(braEndAdd)+" ')' at the end of the function.";
+            elif braBegAdd !=0:
+                infoOut[1]+="\nI have added "+repr(braBegAdd)+" '(' at the beginning of the function.";
+            else:
+                fatalOut[0]+="\nFatal Error in corBra (#0)";
+        self.func=string;
+#
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#
+# Defining replaceAbs()
+#
+# Requires:
+#       Methods:
+#           findAbs
+#       Parameters:
+#           infoOut[]
+#
+#
+    def replaceAbs(self):
+        string=self.func;
+        if string.count("|"):
+            if string.count("|")%2:
+                string=string+"|";
+                infoOut[1]+="There was an error in your '|' placing.\nI attempted to correct it by adding one '|' at the end of the given expression";
+            n=0;
+            while n<len(string):
+                if string[n]=="|":
+                    string=FuncString(string);
+                    pos=string.findAbs(n);
+                    if pos!=None:
+                        string.injectString(")",pos,1,0);
+                        string.injectString("abs(",n,1,0);
+                n+=1;
+                string=str(string);
+        self.func=string;
+#
+# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#
+# Defining valiData
+#
+# Requires:
+#       Methods:
+#           Function.corBra(self), Function.replaceAbs(self), Function.corFunc(self), Function.replaceBra(self), Function.removeSpaces(self)
+#       Parameters:
+#           infoOut[]
+#   
+#    
+    def valiData(self):
+        oriFunc=self.func;
+        infoOut[1]+="\nI am validating the Dates";
+#
+#
+#		Handling bracket errors
+#
+        self.corBra();
+#
+#
+#		Handling | functions
+#
+        self.replaceAbs();
+#
+#
+#		Handling Operator errors
+#
+        func=self.func;
+        func=func.replace("^","**");
+        if func.find("%")>0:
+            func=func.replace("%","*(100**(-1))");
+            infoOut[1]+="\nI am interpreting '%' as 'percent'.";
+        self.func=func;
+#
+# 		Handling Function problems
+#
+#	func=corFunc(func);
+#	func=replaceBra(func);
+#	func=removeSpaces(func);
+#	func=func.replace(",",".");
+	infoOut[0]+="\nI am interpreting "+oriFunc+" as "+func;
 #
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
@@ -197,84 +515,7 @@ def replaceBra(string):
 		string=string.replace(braCloseList[n],")");
 		n+=1;
 	return string;
-#
-# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#
-#	 	Defining | replacer (--> valiData)
-#
-def replaceAbs(string):
-	if string.count("|"):
-		if string.count("|")%2:
-			string=string+"|";
-			infoOut[1]+="There was an error in your '|' placing.\nI attempted to correct it by adding one '|' at the end of the given expression";
-		n=0;
-		while n<len(string):
-			if string[n]=="|":
-				pos=findAbs(string,n);
-				if pos!=None:
-					string=injectString(string,")",pos,1,0);
-					string=injectString(string,"abs(",n,1,0);
-			n+=1;
-	return string;
-#
-#			Defining findAbs (--> replaceAbs)
-#
-def findAbs(string,pos):
-	count=1;
-	if pos==0:
-		while pos<len(string): 
-			nextPos=string.find("|",pos+1);	
-			if nextPos>0:
-				if count>0:
-					count+=checkRowAbs(string,nextPos);
-					pos=max(pos+1,nextPos);
-				elif count==0:
-					endPos=pos;
-					break;
-				else:
-					fatalOut[0]+="\nFatal Error in findAbs! (#0)";
-			elif nextPos==-1:
-				infoOut[3]+="\nI found no further '|'";
-				endPos=pos;
-				break;
-			else:
-				fatalOut[0]+="\nFatal Error in findAbs! (#1)";
-		infoOut[2]+="\nI found '|' at "+repr(endPos);
-		return endPos;
-	elif string[pos-1] in opList+openBraList:
-		while pos<len(string): 
-			nextPos=string.find("|",pos+1);	
-			if nextPos>0:
-				if count>0:
-					count+=checkRowAbs(string,nextPos);
-					pos=max(pos+1,nextPos);
-				elif count==0:
-					endPos=pos;
-					break;
-				else:
-					fatalOut[0]+="\nFatal Error in findAbs! (#2)";
-			elif nextPos==-1:
-				infoOut[3]+="\nI found no further '|'";
-				endPos=pos;
-				break;
-			else:
-				fatalOut[0]+="\nFatal Error in findAbs! (#3)";	
-		infoOut[2]+="\nI found '|' at "+repr(endPos);
-		return endPos;
-	else:
-		infoOut[3]+="\nI have done nothing in findAbs!";
-#
-#			Defining checkRowAbs (--> findAbs)
-#
-def checkRowAbs(string,nextPos,depth=0):
-	if nextPos-1-depth<0:
-		return 1;
-	elif string[nextPos-1-depth] in opList+braList and string[nextPos-1-depth]!="|":
-		return 1;
-	elif string[nextPos-1-depth] in opList+braList and string[nextPos-1-depth]=="|":
-		return checkRowAbs(string,nextPos,depth+1);
-	else:
-		return -1;
+
 #
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
@@ -284,33 +525,7 @@ def removeSpaces(func):
 	func.replace(" ","");
 	infoOut[3]+="\nI removed all Spaces";
 	return func;
-#
-# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#
-# 		Simple String Operations (--> getSubfunc, -->corFunc)
-#
-def injectString(string,injection,start,ignore=0,end=0):
-	if end == 0:
-		end=ignore+start;
-		infoOut[2]+="\nI Injected: "+injection+" at "+repr(start)+" with override until "+repr(end)+" in "+string;
-	string=string[:start]+injection+string[end:];
-	return string;
 
-def ignoreString(string,start,ignore=1):
-	end=start+ignore;
-	infoOut[2]+="\nI Ignored all characters from "+repr(start)+" to "+repr(end)+" in "+string;
-	string=string[:start]+string[end:];
-	return string;
-
-def getWord(string,pos=0,addLists=[],removeLists=[]):
-	checkList=addLists[]
-		if len(string)>pos and string[pos] in checkList:	
-			word="";
-			while len(string)>pos and string[pos] in checkList:
-				word+=string[pos];
-				pos+=1;
-			if word!="":
-				return [word,pos];
 #
 # --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #
@@ -561,41 +776,21 @@ def corFunc(func):
 		n+=1;
 	return func;
 #
-# --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#
-# Defining valiData
-#
-def valiData():
-	global func;
-	oriFunc=func;
-	infoOut[1]+="\nI am validating the Dates";
 #
 #
-#		Handling bracket errors
 #
-	func=corBra(func);
-#
-#
-#		Handling | functions
-#
-	func=replaceAbs(func);
+#   I N P U T - S H I T
 #
 #
-#		Handling Operator errors
-#
-	func=func.replace("^","**");
-	if func.find("%")>0:
-		func=func.replace("%","*(100**(-1))");
-		infoOut[1]+="\nI am interpreting '%' as 'percent'.";
 #
 #
-# 		Handling Function problems
 #
-	func=corFunc(func);
-	func=replaceBra(func);
-	func=removeSpaces(func);
-	func=func.replace(",",".");
-	infoOut[0]+="\nI am interpreting "+oriFunc+" as "+func;
+#
+#
+#
+#
+#
+#
 #
 #  -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- 
 #
